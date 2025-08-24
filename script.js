@@ -1,82 +1,104 @@
-// Background bintang
+// Typing effect
+const typingEl = document.getElementById("typing");
+const texts = JSON.parse(typingEl.getAttribute("data-text"));
+let idx = 0, charIdx = 0;
+function type() {
+  if (charIdx < texts[idx].length) {
+    typingEl.textContent = texts[idx].substring(0, charIdx+1);
+    charIdx++;
+    setTimeout(type, 120);
+  } else {
+    setTimeout(() => {
+      charIdx = 0;
+      idx = (idx+1) % texts.length;
+      type();
+    }, 2000);
+  }
+}
+type();
+
+// Scroll reveal
+const reveals = document.querySelectorAll(".reveal, .animate-zoom");
+window.addEventListener("scroll", () => {
+  for(let el of reveals){
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight - 100) el.classList.add("show");
+  }
+});
+
+// Footer year
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// Stars + Meteor
 const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
-let stars = [];
+let stars = [], meteor = null;
 
-function resizeCanvas(){
+function resize(){
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+window.addEventListener("resize", resize);
+resize();
 
-for(let i=0;i<180;i++){
+// Stars init
+for(let i=0;i<150;i++){
   stars.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    r:Math.random()*1.5,
-    d:Math.random()*1+0.5,
-    o:Math.random()
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*1.5+0.5,
+    d: Math.random()*0.5
   });
 }
-function drawStars(){
+
+// Create single meteor
+function createMeteor(){
+  if(meteor) return; // hanya 1 meteor sekaligus
+  let startX = Math.random()*canvas.width;
+  let startY = Math.random()*canvas.height/3; 
+  let length = Math.random()*80+60;
+  let speed = Math.random()*6+6;
+  meteor = {x:startX,y:startY,len:length,speed:speed,alpha:1};
+}
+
+// Draw stars + meteor
+function drawScene(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Stars
+  ctx.fillStyle="white";
   for(let s of stars){
     ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(255,255,255,${s.o})`;
+    ctx.arc(s.x,s.y,s.r,0,2*Math.PI);
     ctx.fill();
-  }
-  updateStars();
-}
-function updateStars(){
-  for(let s of stars){
-    s.y += s.d;
-    s.o = 0.5+Math.sin(Date.now()/500+s.x)*0.5;
+    s.y+=s.d;
     if(s.y>canvas.height){
       s.y=0; s.x=Math.random()*canvas.width;
     }
   }
-}
-setInterval(drawStars,33);
 
-// Efek ketik
-const typingEl = document.getElementById("typing");
-const texts = JSON.parse(typingEl.dataset.text);
-let i=0, j=0, deleting=false;
+  // Meteor
+  if(meteor){
+    let grad = ctx.createLinearGradient(meteor.x,meteor.y, meteor.x-meteor.len, meteor.y+meteor.len/3);
+    grad.addColorStop(0, `rgba(0,200,255,${meteor.alpha})`);
+    grad.addColorStop(1, "rgba(124,77,255,0)");
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(meteor.x,meteor.y);
+    ctx.lineTo(meteor.x-meteor.len,meteor.y+meteor.len/3);
+    ctx.stroke();
 
-function typeEffect(){
-  const current = texts[i];
-  if(!deleting){
-    typingEl.textContent = current.slice(0, j++);
-    if(j > current.length){
-      deleting=true;
-      setTimeout(typeEffect,1200);
-      return;
-    }
-  } else {
-    typingEl.textContent = current.slice(0, j--);
-    if(j<0){
-      deleting=false;
-      i=(i+1)%texts.length;
-      j=0;
-    }
+    meteor.x += meteor.speed;
+    meteor.y += meteor.speed/3;
+    meteor.alpha -= 0.008;
+
+    if(meteor.alpha<=0) meteor = null; // hilang
   }
-  setTimeout(typeEffect, deleting?70:120);
 }
-setTimeout(typeEffect, 800);
+setInterval(drawScene, 30);
 
-// Scroll reveal + zoom
-const sections = document.querySelectorAll(".reveal, .animate-zoom");
-const revealOnScroll = () => {
-  const trigger = window.innerHeight * 0.85;
-  sections.forEach(sec=>{
-    const top = sec.getBoundingClientRect().top;
-    if(top<trigger){sec.classList.add("show");}
-  });
-};
-window.addEventListener("scroll", revealOnScroll);
-revealOnScroll();
-
-// Tahun otomatis
-document.getElementById("year").textContent = new Date().getFullYear();
+// Meteor random muncul tiap 5-8 detik
+setInterval(() => {
+  if(!meteor) createMeteor();
+}, Math.random()*3000+5000);
