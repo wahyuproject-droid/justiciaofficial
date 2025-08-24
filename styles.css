@@ -1,0 +1,174 @@
+:root {
+  --bg-1:#070716;
+  --bg-2:#0b0f2b;
+  --ink:#e9ecff;
+  --muted:#a7b0d6;
+  --primary:#7c4dff;
+  --secondary:#2aa7ff;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family:"Poppins",sans-serif;
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  color: var(--ink);
+  overflow-x:hidden;
+}
+
+#starfield {
+  position:fixed;inset:0;z-index:-2;
+}
+.bg-overlay {
+  position:fixed;inset:0;z-index:-1;
+  background: radial-gradient(circle at top, rgba(124,77,255,.25), transparent),
+              radial-gradient(circle at bottom, rgba(42,167,255,.25), transparent);
+}
+
+/* Navbar */
+.navbar {
+  position:sticky;top:0;
+  background:rgba(10,10,22,.7);
+  backdrop-filter:blur(10px);
+  z-index:10;
+}
+.nav-inner {
+  width:min(1120px,92%);margin:auto;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;
+}
+.brand {color:#fff;font-weight:800;font-size:20px;text-decoration:none}
+nav a {color:var(--muted);margin-left:20px;text-decoration:none;transition:.3s}
+nav a:hover {color:var(--secondary)}
+
+/* Sections */
+.section {
+  padding:80px 0;
+  width:min(1120px,92%);
+  margin:auto;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all .9s ease;
+}
+.section.show {
+  opacity:1;
+  transform:translateY(0);
+}
+.section-title {
+  font-size:30px;
+  margin-bottom:20px;
+  color:var(--secondary);
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  z-index: 1; /* fix supaya muncul di atas canvas */
+  padding:100px 20px 80px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.hero-text {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: slideFade 2s ease forwards;
+  animation-delay: 0.5s;
+  z-index: 2;
+  position: relative;
+}
+@keyframes slideFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+.eyebrow {color:var(--muted);font-size:18px}
+#typing {
+  font-size:42px;
+  font-weight:800;
+  color:var(--primary);
+  min-height:50px;
+  text-shadow:0 0 15px rgba(124,77,255,.8),
+              0 0 25px rgba(42,167,255,.8),
+              0 0 40px rgba(124,77,255,.5);
+}
+.subtitle {margin-top:15px;color:var(--ink);font-size:18px}
+.scroll-hint {margin-top:40px;color:var(--muted);font-size:15px;animation:bounce 1.5s infinite}
+@keyframes bounce {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(10px)}
+}
+
+/* Biodata */
+.bio-card {
+  background:rgba(255,255,255,.05);
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);
+  max-width:600px;
+  margin:auto;
+  line-height:1.8;
+}
+.bio-card ul {list-style:none;padding:0}
+.bio-card li {margin:10px 0}
+.bio-card strong {color:var(--secondary)}
+
+/* Animasi zoom biodata */
+.animate-zoom {
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 1s ease;
+}
+.animate-zoom.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* About panjang */
+#about p {margin-bottom:18px;line-height:1.8;font-size:16px}
+
+/* Awards */
+.award-card {
+  background:rgba(255,255,255,.05);
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);
+  max-width:320px;
+  transition:.3s;
+}
+.award-card:hover {transform:scale(1.05)}
+.badge {
+  background:var(--primary);
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:20px;
+  margin-bottom:12px;
+  font-weight:600;
+}
+
+/* Timeline */
+.timeline {list-style:none;padding-left:20px}
+.timeline li {
+  position:relative;
+  margin:18px 0;
+}
+.timeline li::before {
+  content:"";
+  position:absolute;
+  left:-12px;top:6px;
+  width:10px;height:10px;
+  background:var(--secondary);
+  border-radius:50%;
+  box-shadow:0 0 10px var(--secondary);
+}
+
+/* Footer */
+.footer {
+  padding:30px;
+  text-align:center;
+  background:rgba(0,0,0,.4);
+  color:var(--muted);
+  font-size:14px;
+}
